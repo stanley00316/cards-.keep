@@ -1,0 +1,212 @@
+<!DOCTYPE html> <!-- 宣告文件型別為 HTML5，確保瀏覽器以標準模式解析 -->
+<html lang="zh-Hant"> <!-- 指定語系為繁體中文 -->
+<head> <!-- 文件頭部開始：包含中繼資料與樣式 -->
+  <meta charset="utf-8"> <!-- 設定字元編碼為 UTF-8，避免亂碼 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- 行動裝置視窗寬度與縮放設定，RWD 必備 -->
+  <title>邱瑋浚｜專案軟體工程師</title> <!-- 瀏覽器分頁標題 -->
+
+  <style> /* 內嵌 CSS，避免外部依賴，確保離線可用 */
+    :root{ /* 定義全站色票與變數，便於維護與主題一致性 */
+      --bg:#061522;            /* 深藍背景（基底） */
+      --fg:#e6f3ff;            /* 文字前景色（淺藍白） */
+      --neon:#39d0ff;          /* 霓虹藍主色（亮點） */
+      --vio:#3e7bd9;           /* 藍紫補色（光暈） */
+      --card:#0b1220;          /* 名片卡底色（半透明時參考） */
+    }
+    *{box-sizing:border-box;margin:0;padding:0} /* 全域盒模型與預設邊距清零，排版更可控 */
+
+    body{ /* 網頁背景與基本排版設定 */
+      font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif; /* 系統優先字體，含中文字體 */
+      background:radial-gradient(circle at center,#05101b 0%,#071a2c 60%,#030a14 100%); /* 深藍輻射漸層背景，強化科技感 */
+      color:var(--fg); /* 文字顏色使用前景色變數 */
+      height:100vh; /* 使版面滿版高 */
+      display:flex;align-items:center;justify-content:center; /* 置中名片卡 */
+      overflow:hidden; /* 避免動畫畫布捲動條 */
+    }
+
+    canvas.bg{position:fixed;inset:0;z-index:-1;} /* 動畫畫布鋪滿視窗並置於背景（z-index 負層級） */
+
+    .card{ /* 名片主容器：半透明玻璃霧面+邊框光暈 */
+      text-align:center; /* 置中文本與元素 */
+      background:linear-gradient(180deg,#0d1222cc,#0f1630ee); /* 半透明深藍漸層，帶一點玻璃感 */
+      border:1px solid rgba(57,208,255,.3); /* 淡霓虹藍邊框 */
+      border-radius:20px; /* 大圓角卡片 */
+      padding:32px 28px; /* 內距 */
+      box-shadow:0 0 25px rgba(57,208,255,.18),inset 0 0 20px rgba(62,123,217,.12); /* 外陰影＋內發光 */
+      width:320px; /* 卡片固定寬度，手機友善 */
+      backdrop-filter:blur(8px) saturate(160%); /* 玻璃擬態（部分瀏覽器支援） */
+    }
+
+    h1{ /* 姓名標題：霓虹漸層文字 */
+      font-size:1.8em; /* 放大字級提升層次 */
+      margin:0; /* 清掉預設外距 */
+      background:linear-gradient(90deg,var(--neon),var(--vio)); /* 左右霓虹漸層 */
+      background-clip:text; /* 標準屬性：提升相容性 */
+      -webkit-background-clip:text; /* 以文字作為裁切區域（WebKit） */
+      -webkit-text-fill-color:transparent; /* 讓漸層可透過文字顯示（WebKit） */
+    }
+
+    h2{ /* 職稱副標 */
+      font-weight:400; /* 中等字重，較輕盈 */
+      color:#a7b6d9; /* 淡藍灰色，降低對比 */
+      margin:8px 0 24px; /* 與姓名間距、與按鈕群間距 */
+    }
+
+    a.btn{ /* 行動按鈕通用樣式（撥號、LINE、Email、網站、vCard） */
+      display:block; /* 使按鈕占滿一行 */
+      width:100%; /* 與卡片同寬 */
+      background:linear-gradient(180deg,rgba(57,208,255,.18),rgba(57,208,255,.06)); /* 霓虹淡漸層底色 */
+      border:1px solid rgba(57,208,255,.3); /* 霓虹邊框 */
+      color:#fff; /* 白字 */
+      text-decoration:none; /* 移除連結底線 */
+      border-radius:10px; /* 圓角 */
+      padding:12px; /* 內距提升可點擊區域 */
+      margin-top:10px; /* 按鈕之間間距 */
+      font-size:1em; /* 基本字級 */
+      transition:all .2s ease; /* hover 動畫平滑 */
+      user-select:none; /* 避免誤選文字 */
+    }
+
+    a.btn:hover{background:rgba(57,208,255,.25)} /* 滑過時亮一點，提供回饋 */
+
+    footer{ /* 卡片底部版權資訊 */
+      margin-top:24px; /* 與按鈕群距離 */
+      font-size:0.85em; /* 稍小字級 */
+      color:#9fb5d6; /* 淡藍灰 */
+    }
+  </style> <!-- 樣式區塊結束 -->
+</head> <!-- 文件頭部結束 -->
+
+<body> <!-- 文件主體開始 -->
+  <canvas class="bg" id="bg"></canvas> <!-- 霓虹粒子動畫背景畫布（鋪滿視窗） -->
+
+  <div class="card"> <!-- 名片卡片容器 -->
+    <img src="ChatGPT Image 2025年11月4日 上午12_11_35.png" alt="力米行銷科技有限公司 LOGO" width="96" style="margin-bottom:12px;filter:drop-shadow(0 0 10px var(--neon))"> <!-- 企業 LOGO：改為實際 PNG 檔，寬度 96 並保留霓虹陰影 -->
+    <h1>邱瑋浚</h1> <!-- 姓名主標 -->
+    <h2>專案軟體工程師</h2> <!-- 職稱副標 -->
+
+    <a class="btn" href="tel:0931160316">📞 撥打電話</a> <!-- 一鍵撥號（行動裝置會啟動電話） -->
+
+    <a class="btn" href="https://line.me/R/ti/p/@stanley0316line" target="_blank">💬 直接加入 LINE 好友</a> <!-- LINE 官方加入連結（含 @）手機直開 App -->
+
+    <a class="btn" href="mailto:dayseeday1101@gmail.com">📧 寄送 Email</a> <!-- 快速寫信（啟動預設郵件程式） -->
+
+    <a class="btn" href="#" onclick="alert('網站建置中，敬請期待！')">🌐 公司網站（尚未完成）</a> <!-- 暫時網站按鈕：點擊提示等待上線 -->
+
+    <a class="btn" href="#" id="shareCardBtn" aria-label="分享名片連結，複製目前網址">🔗 分享名片（複製網址）</a> <!-- 以剪貼簿快速分享目前頁面網址 -->
+
+    <a class="btn" href="#" id="saveVcardBtn">🗂️ 儲存聯絡人（vCard）</a> <!-- 產生並下載 vCard 檔案的按鈕 -->
+    
+    <footer>© <script>document.write(new Date().getFullYear())</script> 力米行銷科技有限公司</footer> <!-- 動態年份版權宣告 -->
+  </div> <!-- 名片卡片容器結束 -->
+
+  <script> /* 互動腳本開始（包含背景動畫與 vCard 下載） */
+    // === 霓虹粒子動畫：以 <canvas> 畫布繪製柔和漂浮光點 ===
+    const canvas = document.getElementById('bg');        // 取得背景畫布元素
+    const ctx = canvas.getContext('2d');                  // 取得 2D 繪圖上下文
+    let W, H, particles = [];                             // 畫布寬高與粒子陣列
+
+    function resize(){                                    // 視窗調整時重設畫布尺寸
+      W = window.innerWidth;                              // 取得視窗寬
+      H = window.innerHeight;                             // 取得視窗高
+      canvas.width  = W;                                  // 設定畫布寬
+      canvas.height = H;                                  // 設定畫布高
+    }
+    window.addEventListener('resize', resize);            // 綁定視窗尺寸改變事件
+    resize();                                             // 初次執行以設定尺寸
+
+    const COUNT = 60;                                     // 粒子數量（可依效能調整）
+    for(let i=0;i<COUNT;i++){                             // 產生指定數量的粒子
+      particles.push({                                    // 將每個粒子屬性推入陣列
+        x: Math.random()*W,                               // 初始 X 位置（隨機）
+        y: Math.random()*H,                               // 初始 Y 位置（隨機）
+        r: Math.random()*2+0.5,                           // 半徑（0.5～2.5）
+        dx: (Math.random()-0.5)*0.4,                      // X 方向速度（微速）
+        dy: (Math.random()-0.5)*0.4,                      // Y 方向速度（微速）
+        color: `hsla(${180+Math.random()*60},100%,60%,.6)`// 以 HSL 製造藍到藍紫的霓虹透明色
+      });
+    }
+
+    function loop(){                                      // 動畫回圈（每幀呼叫）
+      ctx.clearRect(0,0,W,H);                             // 清除上一幀畫面
+      particles.forEach(p=>{                              // 遍歷每顆粒子
+        p.x += p.dx;                                      // 更新 X 位置
+        p.y += p.dy;                                      // 更新 Y 位置
+        if(p.x<0||p.x>W) p.dx *= -1;                      // 碰到左右邊界反彈
+        if(p.y<0||p.y>H) p.dy *= -1;                      // 碰到上下邊界反彈
+        ctx.beginPath();                                  // 開始畫圖形
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);                 // 畫出圓形粒子
+        ctx.fillStyle = p.color;                          // 設定填色為粒子顏色
+        ctx.fill();                                       // 進行填滿
+      });
+      requestAnimationFrame(loop);                        // 要求下一幀繪製（60fps 目標）
+    }
+    loop();                                               // 啟動動畫回圈
+
+    // === vCard 下載功能：點擊按鈕即動態產生並下載 .vcf 檔 ===
+    // === 分享名片（複製網址）：支援 Clipboard API 與後備方案 ===
+    document.getElementById('shareCardBtn').addEventListener('click', (e)=>{ // 綁定分享按鈕
+      e.preventDefault();                                 // 阻止預設行為
+      const url = location.href;                          // 目前頁面網址
+
+      // 優先使用現代 Clipboard API（安全且使用者體驗佳）
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url)
+          .then(()=> alert('已複製網址，可直接貼給朋友'))
+          .catch(()=> fallbackCopy(url));                 // 若失敗則使用後備方案
+        return;
+      }
+      fallbackCopy(url);                                  // 不支援 Clipboard API 的瀏覽器
+
+      function fallbackCopy(text){                        // 後備：建立隱藏 textarea 進行選取複製
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly','');                   // 只讀避免手機彈出鍵盤
+        ta.style.position='fixed';
+        ta.style.left='-9999px';                          // 移出視窗以隱藏
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand('copy');          // 嘗試執行複製指令
+        document.body.removeChild(ta);
+        alert(ok ? '已複製網址，可直接貼給朋友' : '無法自動複製，請手動複製網址列');
+      }
+    });
+
+    // === vCard 下載功能：點擊按鈕即動態產生並下載 .vcf 檔 ===
+    document.getElementById('saveVcardBtn').addEventListener('click', (e)=>{ // 綁定按鈕點擊
+      e.preventDefault();                                   // 阻止 # 連結預設行為（避免跳頂）
+      const fullName   = '邱瑋浚';                           // 姓名（顯示用）
+      const title      = '專案軟體工程師';                   // 職稱
+      const org        = '力米行銷科技有限公司';             // 公司名稱
+      const tel        = '0931160316';                      // 電話（行動）
+      const email      = 'dayseeday1101@gmail.com';         // 電子郵件
+      const lineId     = 'stanley0316line';                 // LINE ID（備註用）
+      const now        = new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z'; // vCard 時戳（UTC，格式化）
+
+      // 組裝 vCard 內容（使用 vCard 3.0，常見通訊錄廣泛支援）
+      const vcard =
+`BEGIN:VCARD
+VERSION:3.0
+N:${fullName};;;
+FN:${fullName}
+ORG:${org}
+TITLE:${title}
+TEL;TYPE=CELL:${tel}
+EMAIL;TYPE=INTERNET:${email}
+NOTE:LINE ID ${lineId}
+REV:${now}
+END:VCARD`;
+
+      const blob = new Blob([vcard], {type:'text/vcard;charset=utf-8'}); // 以 Blob 建立 vCard 檔案資料
+      const url  = URL.createObjectURL(blob);                            // 產生暫時的物件網址供下載
+      const a    = document.createElement('a');                          // 建立隱形 <a> 錨點
+      a.href = url;                                                      // 指向 Blob 連結
+      a.download = `${fullName}.vcf`;                                    // 指定下載檔名（以姓名命名）
+      document.body.appendChild(a);                                      // 插入 DOM 以便觸發
+      a.click();                                                         // 觸發下載
+      document.body.removeChild(a);                                      // 下載後移除元素
+      URL.revokeObjectURL(url);                                          // 釋放物件網址資源
+    });
+  </script> <!-- 互動腳本結束 -->
+</body> <!-- 文件主體結束 -->
+</html> <!-- HTML 文件結束 -->

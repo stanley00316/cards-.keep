@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UVACO｜電子名片 | E-Business Card</title>
+
+<style>
+:root {
+  --uvaco-green: #1faf53;
+  --uvaco-gold1: #f7e7c6;
+  --uvaco-gold2: #f2d49b;
+  --uvaco-gold3: #f8f1da;
+}
+
+/* 重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "Segoe UI", sans-serif;
+}
+
+body {
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ===== 主題（深色 / 淺色） ===== */
+body.theme-dark {
+  background: #050608;
+  color: #ffffff;
+}
+
+body.theme-light {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+/* 背景動態泡泡 */
+.bg-blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.5;
+  z-index: -2;
+  pointer-events: none;
+}
+.blob1 {
+  width: 480px;
+  height: 480px;
+  background: rgba(31, 175, 83, 0.45);
+  top: -160px;
+  left: -120px;
+  animation: float1 22s ease-in-out infinite alternate;
+}
+.blob2 {
+  width: 380px;
+  height: 380px;
+  background: rgba(121, 201, 255, 0.25);
+  bottom: -160px;
+  right: -80px;
+  animation: float2 26s ease-in-out infinite alternate;
+}
+@keyframes float1 { 0%{transform:translate(0,0)} 100%{transform:translate(40px,60px)} }
+@keyframes float2 { 0%{transform:translate(0,0)} 100%{transform:translate(-50px,-30px)} }
+
+body.theme-light .blob1 {
+  background: rgba(31, 175, 83, 0.25);
+}
+body.theme-light .blob2 {
+  background: rgba(121, 201, 255, 0.18);
+}
+
+/* ===== 頂部：語言＋主題切換 ===== */
+.top-bar {
+  width: 100%;
+  padding: 10px 0 4px;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.lang-switch,
+.theme-switch {
+  display: flex;
+  gap: 8px;
+}
+
+.lang-btn,
+.theme-btn {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  border: 1px solid #333;
+  background: #1a1a1a;
+  color: #fff;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.lang-btn:hover,
+.theme-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* 淺色主題時按鈕底色同步變亮 */
+body.theme-light .lang-btn,
+body.theme-light .theme-btn {
+  background: #ffffff;
+  color: #333;
+  border-color: #cccccc;
+}
+
+.lang-active,
+.theme-active {
+  border-color: var(--uvaco-green);
+  color: var(--uvaco-green);
+}
+
+/* ===== LOGO 區（金色外框＋強光暈＋微浮動呼吸） ===== */
+.hero {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 6px;
+  margin-bottom: 10px;
+}
+
+/* 外框：金色 + 3D + 微浮動 + 波光 */
+.hero-frame {
+  width: 90%;
+  max-width: 480px;
+  border-radius: 40px;
+  padding: 14px 18px;
+
+  background: linear-gradient(
+    135deg,
+    #faf3dd,
+    #f7ddaa,
+    #f4c978,
+    #f7ddaa,
+    #faf3dd
+  );
+  background-size: 300% 300%;
+
+  box-shadow:
+    0 0 25px rgba(255,215,125,0.55),
+    0 18px 40px rgba(0,0,0,0.3),
+    inset 0 0 10px rgba(255,255,255,0.45);
+
+  position: relative;
+  overflow: hidden;
+
+  /* 金色波光 + 微浮動呼吸 */
+  animation:
+    goldFlow 10s ease-in-out infinite,
+    heroFloat 6s ease-in-out infinite;
+}
+
+/* 金色漸層慢慢流動 */
+@keyframes goldFlow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 外框本體微浮動＋0.5% 呼吸感 */
+@keyframes heroFloat {
+  0%   { transform: translateY(0px) scale(1); }
+  100% { transform: translateY(-4px) scale(1.005); }
+}
+
+/* 金色柔光罩層 */
+.hero-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 40px;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255,255,255,0.5), transparent 60%),
+    radial-gradient(circle at 80% 100%, rgba(255,255,255,0.35), transparent 65%);
+  mix-blend-mode: screen;
+}
+
+/* LOGO 本體 */
+.hero-logo {
+  width: 100%;
+  border-radius: 30px;
+  background: #ffffff;
+  display: block;
+  object-fit: contain;
+  box-shadow:
+    0 0 20px rgba(31,175,83,0.45),
+    0 0 42px rgba(31,175,83,0.60),
+    inset 0 0 8px rgba(255,255,255,0.8),
+    inset 0 0 4px rgba(0,0,0,0.15);
+}
+
+/* ===== 資料卡 ===== */
+.card {
+  width: 90%;
+  max-width: 480px;
+  margin: 12px auto 40px;
+  border-radius: 22px;
+  padding: 26px 22px;
+  animation: slideCard 0.9s ease-out;
+}
+
+/* 深色主題卡片 */
+body.theme-dark .card {
+  background: rgba(22,22,24,0.85);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 14px 34px rgba(0,0,0,0.45);
+}
+
+/* 淺色主題卡片 */
+body.theme-light .card {
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(15,23,42,0.12);
+  border: 1px solid rgba(15,23,42,0.06);
+}
+
+@keyframes slideCard {
+  0% { opacity: 0; transform: translateX(26px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+/* 文字區 */
+.name {
+  font-size: 26px;
+  font-weight: 800;
+  margin-bottom: 5px;
+}
+.name .en { color: var(--uvaco-green); }
+
+.tagline {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+body.theme-dark .tagline { color: #d1d5db; }
+body.theme-light .tagline { color: #4b5563; }
+
+.tagline strong { color: var(--uvaco-green); }
+
+.divider {
+  height: 1px;
+  margin: 16px 0;
+}
+body.theme-dark .divider { background: rgba(255,255,255,0.08); }
+body.theme-light .divider { background: rgba(15,23,42,0.06); }
+
+.section-label {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  margin-bottom: 14px;
+}
+body.theme-dark .section-label { color: #9ca3af; }
+body.theme-light .section-label { color: #6b7280; }
+
+/* 按鈕 */
+.btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 13px 16px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 16px;
+  transition: 0.2s;
+}
+
+/* 主按鈕：電話 */
+body.theme-dark .btn-primary {
+  background: var(--uvaco-green);
+  color: #000;
+}
+body.theme-light .btn-primary {
+  background: var(--uvaco-green);
+  color: #ffffff;
+}
+
+/* 次按鈕 */
+body.theme-dark .btn-secondary {
+  background: #111827;
+  border: 1px solid var(--uvaco-green);
+  color: var(--uvaco-green);
+}
+body.theme-light .btn-secondary {
+  background: #ffffff;
+  border: 1px solid rgba(31,175,83,0.6);
+  color: var(--uvaco-green);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+}
+
+/* 提示文字 */
+.hint {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-size: 13px;
+}
+body.theme-dark .hint {
+  background: rgba(255,255,255,0.08);
+  color: #d1d5db;
+  border: 1px solid rgba(255,255,255,0.10);
+}
+body.theme-light .hint {
+  background: rgba(15,23,42,0.03);
+  color: #4b5563;
+  border: 1px solid rgba(15,23,42,0.06);
+}
+
+/* ✅ 不再在 CSS 直接隱藏英文，交給 JS 控制 */
+/* （原本這行會害 English 顯示不出來） */
+/* .lang-en { display: none; } */
+</style>
+</head>
+
+<body class="theme-dark">
+
+<!-- 背景泡泡 -->
+<div class="bg-blob blob1"></div>
+<div class="bg-blob blob2"></div>
+
+<!-- 頂部：語言切換＋主題切換 -->
+<div class="top-bar">
+  <div class="lang-switch">
+    <button class="lang-btn lang-active" onclick="setLang('zh')">中文</button>
+    <button class="lang-btn" onclick="setLang('en')">English</button>
+  </div>
+  <div class="theme-switch">
+    <button class="theme-btn theme-active" onclick="setTheme('dark')">🌙 深色</button>
+    <button class="theme-btn" onclick="setTheme('light')">☀️ 淺色</button>
+  </div>
+</div>
+
+<!-- LOGO 區 -->
+<div class="hero">
+  <div class="hero-frame">
+    <img src="uvaco-logo.png" class="hero-logo" alt="UVACO">
+  </div>
+</div>
+
+<!-- 資料卡 -->
+<div class="card">
+
+  <!-- 姓名 -->
+  <div class="name lang-zh">柯宜瀅 ｜ <span class="en">Yuyu Ko</span></div>
+  <div class="name lang-en">Yuyu Ko ｜ <span class="en">Ko</span></div>
+
+  <!-- 標語 -->
+  <div class="tagline lang-zh">健康・事業・未來</div>
+  <div class="tagline lang-zh"><strong>葡眾企業｜專業陪伴</strong></div>
+
+  <div class="tagline lang-en">Health • Business • Future</div>
+  <div class="tagline lang-en"><strong>Puzhong Enterprise | Professional Support</strong></div>
+
+  <div class="divider"></div>
+
+  <!-- 標題：聯絡方式 -->
+  <div class="section-label lang-zh">聯絡方式 CONTACT</div>
+  <div class="section-label lang-en">CONTACT</div>
+
+  <!-- 按鈕群組 -->
+  <div class="btn-group">
+
+    <!-- Call -->
+    <a class="btn btn-primary lang-zh" href="tel:0905519002">📞 立即來電</a>
+    <a class="btn btn-primary lang-en" href="tel:0905519002">📞 Call Now</a>
+
+    <!-- LINE -->
+    <a class="btn btn-secondary lang-zh" href="https://line.me/R/ti/p/2sSjJ_o6OT" target="_blank">💬 加入 LINE</a>
+    <a class="btn btn-secondary lang-en" href="https://line.me/R/ti/p/2sSjJ_o6OT" target="_blank">💬 Add LINE</a>    
+
+    <!-- Email -->
+    <a class="btn btn-secondary lang-zh" href="mailto:ccccwoho@gmail.com">✉️ 寄送 Email</a>
+    <a class="btn btn-secondary lang-en" href="mailto:ccccwoho@gmail.com">✉️ Send Email</a>
+
+    <!-- Facebook -->
+    <a class="btn btn-secondary lang-zh" href="https://www.facebook.com/share/17nfDH1ZQR/?mibextid=wwXIfr" target="_blank">🔗 Facebook</a>
+    <a class="btn btn-secondary lang-en" href="https://www.facebook.com/share/17nfDH1ZQR/?mibextid=wwXIfr" target="_blank">🔗 Facebook</a>
+
+    <!-- VCF -->
+    <a class="btn btn-secondary lang-zh" href="yuyu-ko.vcf" download="YuyuKo.vcf">📁 儲存到通訊錄（VCF）</a>
+    <a class="btn btn-secondary lang-en" href="yuyu-ko.vcf" download="YuyuKo.vcf">📁 Save Contact (VCF)</a>
+
+  </div>
+
+  <!-- 提示文字 -->
+  <div class="hint lang-zh">
+    若您透過 <strong>NFC 名片</strong> 或分享連結開啟此頁，我會盡快回覆您。
+  </div>
+  <div class="hint lang-en">
+    If you opened this page via <strong>NFC card</strong> or shared link, I will respond as soon as possible.
+  </div>
+
+</div>
+
+<script>
+function setLang(lang) {
+  // 切換按鈕狀態
+  document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('lang-active'));
+  if (lang === 'zh') {
+    document.querySelectorAll('.lang-btn')[0].classList.add('lang-active');
+  } else {
+    document.querySelectorAll('.lang-btn')[1].classList.add('lang-active');
+  }
+
+  // 顯示 / 隱藏對應語系的元素
+  document.querySelectorAll('.lang-zh').forEach(el => {
+    el.style.display = (lang === 'zh') ? 'block' : 'none';
+  });
+  document.querySelectorAll('.lang-en').forEach(el => {
+    el.style.display = (lang === 'en') ? 'block' : 'none';
+  });
+}
+
+function setTheme(theme) {
+  document.body.classList.remove('theme-dark', 'theme-light');
+  if (theme === 'light') {
+    document.body.classList.add('theme-light');
+  } else {
+    document.body.classList.add('theme-dark');
+  }
+
+  // 主題按鈕狀態
+  document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('theme-active'));
+  if (theme === 'light') {
+    document.querySelectorAll('.theme-btn')[1].classList.add('theme-active');
+  } else {
+    document.querySelectorAll('.theme-btn')[0].classList.add('theme-active');
+  }
+}
+
+// 預設：中文 + 深色
+setLang('zh');
+setTheme('dark');
+</script>
+
+</body>
+</html>
