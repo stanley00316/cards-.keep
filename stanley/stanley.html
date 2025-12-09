@@ -3,7 +3,7 @@
 <head> <!-- 文件頭部開始：包含中繼資料與樣式 -->
   <meta charset="utf-8"> <!-- 設定字元編碼為 UTF-8，避免亂碼 -->
   <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- 行動裝置視窗寬度與縮放設定，RWD 必備 -->
-  <title>邱瑋浚｜專案軟體工程師</title> <!-- 瀏覽器分頁標題 -->
+  <title>邱瑋浚｜專案軟體工程師 | Stanley Chiu — Project Software Engineer</title> <!-- 瀏覽器分頁標題 -->
 
   <style> /* 內嵌 CSS，避免外部依賴，確保離線可用 */
     :root{ /* 定義全站色票與變數，便於維護與主題一致性 */
@@ -81,13 +81,20 @@
   <canvas class="bg" id="bg"></canvas> <!-- 霓虹粒子動畫背景畫布（鋪滿視窗） -->
 
   <div class="card"> <!-- 名片卡片容器 -->
-    <img src="ChatGPT Image 2025年11月4日 上午12_11_35.png" alt="力米行銷科技有限公司 LOGO" width="96" style="margin-bottom:12px;filter:drop-shadow(0 0 10px var(--neon))"> <!-- 企業 LOGO：改為實際 PNG 檔，寬度 96 並保留霓虹陰影 -->
-    <h1>邱瑋浚</h1> <!-- 姓名主標 -->
-    <h2>專案軟體工程師</h2> <!-- 職稱副標 -->
+    <img src="logo.png" alt="力米行銷科技有限公司 LOGO" width="72" style="margin-bottom:10px;filter:drop-shadow(0 0 8px var(--neon)) brightness(1.1)"> <!-- 企業 LOGO -->
+    <h1 class="lang-zh">邱瑋浚</h1>
+    <h1 class="lang-en" style="display:none">Stanley Chiu</h1>
+
+    <h2 class="lang-zh">專案軟體工程師</h2>
+    <h2 class="lang-en" style="display:none">Project Software Engineer</h2>
+    <div style="margin-top:6px;font-size:14px;color:#9fb5d6">
+      <span class="lang-zh">手機：<strong id="phoneDisplayZh">0931-160-316</strong></span>
+      <span class="lang-en" style="display:none">Phone: <strong id="phoneDisplayEn">0931-160-316</strong></span>
+    </div>
 
     <a class="btn" href="tel:0931160316">📞 撥打電話</a> <!-- 一鍵撥號（行動裝置會啟動電話） -->
 
-    <a class="btn" href="https://line.me/R/ti/p/@stanley0316line" target="_blank">💬 直接加入 LINE 好友</a> <!-- LINE 官方加入連結（含 @）手機直開 App -->
+    <a class="btn" href="https://line.me/ti/p/xxxxxx" target="_blank">💬 直接加入 LINE 好友</a> <!-- LINE 官方加入連結（暫置） -->
 
     <a class="btn" href="mailto:dayseeday1101@gmail.com">📧 寄送 Email</a> <!-- 快速寫信（啟動預設郵件程式） -->
 
@@ -142,6 +149,28 @@
       requestAnimationFrame(loop);                        // 要求下一幀繪製（60fps 目標）
     }
     loop();                                               // 啟動動畫回圈
+
+    // ===== 語言與主題切換支援（簡單通用函式） =====
+    function setLang(lang){
+      document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('lang-active'));
+      document.querySelectorAll('.lang-zh').forEach(el=>el.style.display = (lang==='zh')?'block':'none');
+      document.querySelectorAll('.lang-en').forEach(el=>el.style.display = (lang==='en')?'block':'none');
+      if(lang==='zh') document.querySelectorAll('.lang-btn')[0]?.classList.add('lang-active');
+      else document.querySelectorAll('.lang-btn')[1]?.classList.add('lang-active');
+    }
+
+    function setTheme(theme){
+      document.body.classList.remove('theme-dark','theme-light');
+      if(theme==='light') document.body.classList.add('theme-light');
+      else document.body.classList.add('theme-dark');
+      document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('theme-active'));
+      if(theme==='light') document.querySelectorAll('.theme-btn')[1]?.classList.add('theme-active');
+      else document.querySelectorAll('.theme-btn')[0]?.classList.add('theme-active');
+    }
+
+    // 預設語言與主題
+    setLang('zh');
+    setTheme('dark');
 
     // === vCard 下載功能：點擊按鈕即動態產生並下載 .vcf 檔 ===
     // === 分享名片（複製網址）：支援 Clipboard API 與後備方案 ===
