@@ -65,6 +65,7 @@
   .btn{display:flex;justify-content:center;align-items:center;padding:14px 18px;border-radius:32px;text-decoration:none;font-size:16px;font-weight:800;background:var(--btn);color:var(--ink);box-shadow:0 10px 26px rgba(0,0,0,.18);transition:.2s}
   .btn:hover{transform:translateY(-2px)}
   .btn-outline{background:transparent;border:1px solid rgba(219,231,255,.8);color:#fff}
+  .btn-share{background:linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);color:#fff;border:none}
 
   .hint{margin-top:12px;padding:12px 14px;border-radius:14px;font-size:13px;background:rgba(255,255,255,.10);color:var(--muted);border:1px solid rgba(255,255,255,.12)}
 
@@ -133,6 +134,9 @@
 
       <a class="btn lang-zh" id="btnFacebook" href="https://www.facebook.com/xxxxxxx" target="_blank">👍 軒尼斯官方 FB 粉絲團</a>
       <a class="btn lang-en" style="display:none" id="btnFacebookEn" href="https://www.facebook.com/xxxxxxx" target="_blank">👍 Hennessy Facebook</a>
+
+      <a class="btn btn-share lang-zh" id="btnShare" href="#">🔗 分享電子名片</a>
+      <a class="btn btn-share lang-en" style="display:none" id="btnShareEn" href="#">🔗 Share This Card</a>
     </div>
 
     <div class="hint lang-zh">若您透過 <strong>NFC 名片</strong> 或分享連結開啟此頁，我們會盡快回覆您。</div>
@@ -185,6 +189,68 @@
   }
   window.setLang = setLang; // 供上方按鈕呼叫
   setLang('zh');
+
+  // 分享功能
+  async function shareCard(lang) {
+    const shareData = {
+      title: lang === 'zh' ? `${PROFILE.nameZh} - 電子名片` : `${PROFILE.nameEn} - Digital Card`,
+      text: lang === 'zh' 
+        ? `${PROFILE.nameZh}\n${PROFILE.orgZh}｜${PROFILE.titleZh}\n電話：${PROFILE.phoneDisplay}`
+        : `${PROFILE.nameEn}\n${PROFILE.orgEn} | ${PROFILE.titleEn}\nPhone: ${PROFILE.phoneDisplay}`,
+      url: window.location.href
+    };
+
+    // 優先使用 Web Share API（手機支援）
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          copyToClipboard(lang);
+        }
+      }
+    } else {
+      // 桌面端：複製連結
+      copyToClipboard(lang);
+    }
+  }
+
+  // 複製連結到剪貼簿
+  function copyToClipboard(lang) {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+      const msg = lang === 'zh' ? '✅ 已複製名片連結！' : '✅ Link copied!';
+      showToast(msg);
+    }).catch(() => {
+      // 備用方案
+      const input = document.createElement('input');
+      input.value = url;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      const msg = lang === 'zh' ? '✅ 已複製名片連結！' : '✅ Link copied!';
+      showToast(msg);
+    });
+  }
+
+  // 顯示提示訊息
+  function showToast(message) {
+    let toast = document.getElementById('toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'toast';
+      toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:12px 24px;border-radius:30px;font-size:15px;z-index:9999;opacity:0;transition:opacity .3s;backdrop-filter:blur(10px);box-shadow:0 4px 20px rgba(0,0,0,.3)';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.style.opacity = '1';
+    setTimeout(() => { toast.style.opacity = '0'; }, 2500);
+  }
+
+  // 綁定分享按鈕事件
+  $('#btnShare').addEventListener('click', e => { e.preventDefault(); shareCard('zh'); });
+  $('#btnShareEn').addEventListener('click', e => { e.preventDefault(); shareCard('en'); });
 </script>
 </body>
 </html>
